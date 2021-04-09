@@ -54,7 +54,11 @@
 #include <emmintrin.h>
 
 typedef struct {
+#ifdef PFFFT_UNALIGNED_ACCESS
+    __m128d_u d128[2];
+#else
     __m128d d128[2];
+#endif
 } m256d;
 
 typedef m256d v4sf;

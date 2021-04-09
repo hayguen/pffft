@@ -50,7 +50,11 @@
 #pragma message( __FILE__ ": AVX macros are defined" )
 
 #include <immintrin.h>
+#ifdef PFFFT_UNALIGNED_ACCESS
+typedef __m256d_u v4sf;
+#else
 typedef __m256d v4sf;
+#endif
 
 /* 4 doubles by simd vector */
 #  define SIMD_SZ 4
