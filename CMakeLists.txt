@@ -5,6 +5,9 @@ project(PRETTY_FAST_FFT)
 option(USE_TYPE_FLOAT  "activate single precision 'float'?" ON)
 option(USE_TYPE_DOUBLE "activate 'double' precision float?" ON)
 
+# misc options
+option(USE_UNALIGNED   "enable FFT transformation from unaligned memory?" OFF)
+
 # architecture/optimization options
 option(USE_SIMD        "use SIMD (SSE/AVX/NEON/ALTIVEC) CPU features? - " ON)
 option(DISABLE_SIMD_AVX "disable AVX CPU features? - " OFF)
@@ -128,6 +131,9 @@ if (USE_SCALAR_VECT)
 endif()
 if (USE_DEBUG_ASAN)
   target_compile_options(PFFFT PRIVATE "-fsanitize=address")
+endif()
+if (USE_UNALIGNED)
+  target_compile_definitions(PFFFT PRIVATE PFFFT_UNALIGNED_ACCESS=1)
 endif()
 if (NOT USE_SIMD)
   target_compile_definitions(PFFFT PRIVATE PFFFT_SIMD_DISABLE=1)
@@ -324,6 +330,22 @@ endif()
 
 ######################################################
 
+if (USE_UNALIGNED)
+  add_executable( test_pffft_unaligned  test_pffft_unaligned.c )
+  target_compile_definitions(test_pffft_unaligned PRIVATE _USE_MATH_DEFINES)
+  target_compile_definitions(test_pffft_unaligned PRIVATE PFFFT_ENABLE_DOUBLE)
+  if (USE_TYPE_FLOAT)
+    target_compile_definitions(test_pffft_unaligned PRIVATE TEST_UNALIGNED_FLOAT)
+  endif()
+  if (USE_TYPE_DOUBLE)
+    target_compile_definitions(test_pffft_unaligned PRIVATE TEST_UNALIGNED_DOUBLE)
+  endif()
+  target_link_libraries( test_pffft_unaligned  PFFFT ${ASANLIB} )
+endif()
+
+
+######################################################
+
 add_subdirectory(examples)
 
 ######################################################
@@ -369,3 +391,9 @@ if (USE_TYPE_FLOAT)
 
 endif()
 
+if (USE_UNALIGNED)
+  add_test(NAME test_pffft_unaligned_data
+    COMMAND "${CMAKE_CURRENT_BINARY_DIR}/test_pffft_unaligned"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+endif()

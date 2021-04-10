@@ -92,7 +92,11 @@ typedef union v4sf_union {
 
 #  define VLOAD_ALIGNED(ptr)    (*((v4sf*)(ptr)))
 
+#ifdef PFFFT_UNALIGNED_ACCESS
+#  define VALIGNED(ptr) (1)
+#else
 #  define VALIGNED(ptr) ((((uintptr_t)(ptr)) & (sizeof(v4sf)-1) ) == 0)
+#endif
 
 
   /* INTERLEAVE2() */
@@ -174,7 +178,11 @@ typedef union v4sf_union {
 #  define LD_PS1(p) (p)
 #  define VLOAD_UNALIGNED(ptr)  (*(ptr))
 #  define VLOAD_ALIGNED(ptr)    (*(ptr))
+#ifdef PFFFT_UNALIGNED_ACCESS
+#  define VALIGNED(ptr) (1)
+#else
 #  define VALIGNED(ptr) ((((uintptr_t)(ptr)) & (sizeof(vsfscalar)-1) ) == 0)
+#endif
 
 #else
 /* #pragma message( __FILE__ ": float SCALAR1 macros are not defined" ) */

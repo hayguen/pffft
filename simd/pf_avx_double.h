@@ -69,7 +69,11 @@ typedef union v4sf_union {
 #  define VSUB(a,b) _mm256_sub_pd(a,b)
 #  define LD_PS1(p) _mm256_set1_pd(p)
 #  define VLOAD_UNALIGNED(ptr)  _mm256_loadu_pd(ptr)
+#ifdef PFFFT_UNALIGNED_ACCESS
+#  define VLOAD_ALIGNED(ptr)    _mm256_loadu_pd(ptr)
+#else
 #  define VLOAD_ALIGNED(ptr)    _mm256_load_pd(ptr)
+#endif
 
 /* INTERLEAVE2 (in1, in2, out1, out2) pseudo code:
 out1 = [ in1[0], in2[0], in1[1], in2[1] ]
@@ -137,7 +141,11 @@ return [ b[0], b[1], a[2], a[3] ]
 /* reverse/flip complex floats */
 #  define VREV_C(a)    _mm256_insertf128_pd(_mm256_castpd128_pd256(_mm256_extractf128_pd(a, 1)), _mm256_castpd256_pd128(a), 1)
 
+#ifdef PFFFT_UNALIGNED_ACCESS
+#  define VALIGNED(ptr) (1)
+#else
 #  define VALIGNED(ptr) ((((uintptr_t)(ptr)) & 0x1F) == 0)
+#endif
 
 #endif
 
