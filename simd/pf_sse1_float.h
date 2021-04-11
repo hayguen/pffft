@@ -68,6 +68,10 @@ typedef union v4sf_union {
 
 #  define INTERLEAVE2(in1, in2, out1, out2) { v4sf tmp__ = _mm_unpacklo_ps(in1, in2); out2 = _mm_unpackhi_ps(in1, in2); out1 = tmp__; }
 #  define UNINTERLEAVE2(in1, in2, out1, out2) { v4sf tmp__ = _mm_shuffle_ps(in1, in2, _MM_SHUFFLE(2,0,2,0)); out2 = _mm_shuffle_ps(in1, in2, _MM_SHUFFLE(3,1,3,1)); out1 = tmp__; }
+#  define UNINTERLEAVE2_FROM_MEM(in1, in2, out1, out2) { \
+  v4sf tmp__ = _mm_shuffle_ps(VLOAD_ALIGNED(in1), VLOAD_ALIGNED(in2), _MM_SHUFFLE(2,0,2,0)); \
+  out2 = _mm_shuffle_ps(VLOAD_ALIGNED(in1), VLOAD_ALIGNED(in2), _MM_SHUFFLE(3,1,3,1)); \
+  out1 = tmp__; }
 #  define VTRANSPOSE4(x0,x1,x2,x3) _MM_TRANSPOSE4_PS(x0,x1,x2,x3)
 #  define VSWAPHL(a,b) _mm_shuffle_ps(b, a, _MM_SHUFFLE(3,2,1,0))
 

@@ -256,6 +256,19 @@ out2 = [ in1[1], in1[3], in2[1], in2[3] ]
 		_mm_shuffle_pd(low2__, high2__, 3));							\
 	out1 = tmp__;														\
 }
+#  define UNINTERLEAVE2_FROM_MEM(in1, in2, out1, out2) {				\
+	__m128d low1__ = mm256_castpd256_pd128(VLOAD_ALIGNED(in1));			\
+	__m128d low2__ = mm256_castpd256_pd128(VLOAD_ALIGNED(in2));			\
+	__m128d high1__ = mm256_extractf128_pd(VLOAD_ALIGNED(in1), 1);		\
+	__m128d high2__ = mm256_extractf128_pd(VLOAD_ALIGNED(in2), 1); 		\
+	m256d tmp__ = mm256_insertf128_pd_1(								\
+		mm256_castpd128_pd256(_mm_shuffle_pd(low1__, high1__, 0)),		\
+		_mm_shuffle_pd(low2__, high2__, 0));							\
+	out2 = mm256_insertf128_pd_1(										\
+		mm256_castpd128_pd256(_mm_shuffle_pd(low1__, high1__, 3)),		\
+		_mm_shuffle_pd(low2__, high2__, 3));							\
+	out1 = tmp__;														\
+}
 
 #  define VTRANSPOSE4(row0, row1, row2, row3) {							\
         m256d tmp3, tmp2, tmp1, tmp0;                     			\

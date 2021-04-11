@@ -16,14 +16,15 @@
 
 #include "pffft.h"
 
+#define FLOAT_OFF  1
+
 float * generate_float(int N, int cplx)
 {
-  float * data = (float*)malloc( cplx*(N+1) * sizeof(float));
-  float * start = data + 1;
+  float * data = (float*)malloc( cplx*(N+FLOAT_OFF) * sizeof(float));
+  float * start = data + FLOAT_OFF;
   float dPhi = (float)( (2.0 * M_PI) / N );
   if (cplx == 2)
   {
-    data[0] = data[1] = N;
     for (int k = 0; k < N; ++k)
     {
       start[2*k] = cos(k * dPhi);
@@ -32,7 +33,6 @@ float * generate_float(int N, int cplx)
   }
   else
   {
-    data[0] = N;
     for (int k = 0; k < N; ++k)
       start[k] = cos(k * dPhi);
   }
@@ -45,11 +45,11 @@ void test_float(int N)
   {
     PFFFT_Setup *s = pffft_new_setup(N, cplx ? PFFFT_COMPLEX : PFFFT_REAL);
     float *inpd = generate_float(N, cplx);
-    float *inps = inpd + 1;
-    float *outd = (float*)malloc( cplx*(N+1) * sizeof(float));
-    float *outs = outd + 1;
-    float *wrkd = (float*)malloc( cplx*(N+1) * sizeof(float));
-    float *wrks = wrkd + 1;
+    float *inps = inpd + FLOAT_OFF;
+    float *outd = (float*)malloc( cplx*(N+FLOAT_OFF) * sizeof(float));
+    float *outs = outd + FLOAT_OFF;
+    float *wrkd = (float*)malloc( cplx*(N+FLOAT_OFF) * sizeof(float));
+    float *wrks = wrkd + FLOAT_OFF;
     const char *cs = (cplx==2) ? "complex":"scalar";
 
     fprintf(stderr, "\nrunning out-of-place fft for %s float with %s ..\n", cs, pffft_simd_arch());
@@ -73,14 +73,15 @@ void test_float(int N)
 
 #include "pffft_double.h"
 
+#define DOUBLE_OFF 2
+
 double * generate_double(int N, int cplx)
 {
-  double * data = (double*)malloc( cplx*(N+1) * sizeof(double));
-  double * start = data + 1;
+  double * data = (double*)malloc( cplx*(N+DOUBLE_OFF) * sizeof(double));
+  double * start = data + DOUBLE_OFF;
   double dPhi = (2.0 * M_PI) / N;
   if (cplx == 2)
   {
-    data[0] = data[1] = N;
     for (int k = 0; k < N; ++k)
     {
       start[2*k] = cos(k * dPhi);
@@ -89,7 +90,6 @@ double * generate_double(int N, int cplx)
   }
   else
   {
-    data[0] = N;
     for (int k = 0; k < N; ++k)
       start[k] = cos(k * dPhi);
   }
@@ -102,11 +102,11 @@ void test_double(int N)
   {
     PFFFTD_Setup *s = pffftd_new_setup(N, cplx ? PFFFT_COMPLEX : PFFFT_REAL);
     double *inpd = generate_double(N, cplx);
-    double *inps = inpd + 1;
-    double *outd = (double*)malloc( cplx*(N+1) * sizeof(double));
-    double *outs = outd + 1;
-    double *wrkd = (double*)malloc( cplx*(N+1) * sizeof(double));
-    double *wrks = wrkd + 1;
+    double *inps = inpd + DOUBLE_OFF;
+    double *outd = (double*)malloc( cplx*(N+DOUBLE_OFF) * sizeof(double));
+    double *outs = outd + DOUBLE_OFF;
+    double *wrkd = (double*)malloc( cplx*(N+DOUBLE_OFF) * sizeof(double));
+    double *wrks = wrkd + DOUBLE_OFF;
     const char *cs = (cplx==2) ? "complex":"scalar";
 
     fprintf(stderr, "\nrunning out-of-place fft for %s double with %s ..\n", cs, pffftd_simd_arch());
@@ -129,6 +129,11 @@ void test_double(int N)
 
 int main(int argc, char *argv[])
 {
+#ifdef TEST_UNALIGNED_DOUBLE
+  test_double(512);
+#endif
+
+
 #ifdef TEST_UNALIGNED_FLOAT
   test_float(512);
 #endif

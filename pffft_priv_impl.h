@@ -1439,7 +1439,7 @@ void FUNC_TRANSFORM_INTERNAL(SETUP_STRUCT *setup, const float *finput, float *fo
     } else {
       v4sf *tmp = buff[ib];
       for (k=0; k < Ncvec; ++k) {
-        UNINTERLEAVE2(vinput[k*2], vinput[k*2+1], tmp[k*2], tmp[k*2+1]);
+        UNINTERLEAVE2_FROM_MEM(&vinput[k*2], &vinput[k*2+1], tmp[k*2], tmp[k*2+1]);
       }
       ib = (cfftf1_ps(Ncvec, buff[ib], buff[!ib], buff[ib], 
                       setup->twiddle, &setup->ifac[0], -1) == buff[0] ? 0 : 1);
