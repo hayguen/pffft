@@ -70,13 +70,6 @@
 #  define COMPILER_GCC
 #endif
 
-#ifdef COMPILER_MSVC
-#  define _USE_MATH_DEFINES
-#  include <malloc.h>
-#else
-#  include <alloca.h>
-#endif
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>

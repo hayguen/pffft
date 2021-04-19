@@ -14,7 +14,9 @@
 #include <assert.h>
 #include <string.h>
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
 #define HAVE_SYS_TIMES
+#endif
 
 #ifdef HAVE_SYS_TIMES
 #  include <sys/times.h>
